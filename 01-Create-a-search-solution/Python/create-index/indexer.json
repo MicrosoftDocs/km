@@ -1,0 +1,46 @@
+{
+    "name":"margies-indexer", 
+    "dataSourceName" : "margies-docs",
+    "targetIndexName" : "margies-index",
+    "fieldMappings" : [
+          {
+            "sourceFieldName" : "metadata_storage_path",
+            "targetFieldName" : "id",
+            "mappingFunction" : 
+              { "name" : "base64Encode" }
+          },
+          {
+            "sourceFieldName" : "metadata_storage_path",
+            "targetFieldName" : "url"
+          },
+          {
+            "sourceFieldName" : "metadata_storage_name",
+            "targetFieldName" : "file_name"
+          },
+          {
+            "sourceFieldName" : "metadata_author",
+            "targetFieldName" : "author"
+          },
+          {
+            "sourceFieldName" : "content",
+            "targetFieldName" : "content"
+          },
+          {
+            "sourceFieldName" : "metadata_storage_size",
+            "targetFieldName" : "size"
+          },
+          {
+            "sourceFieldName" : "metadata_storage_last_modified",
+            "targetFieldName" : "last_modified"
+          }
+     ],
+    "parameters":
+    {
+      "maxFailedItems":-1,
+      "maxFailedItemsPerBatch":-1,
+      "configuration": 
+      {
+          "dataToExtract": "contentAndMetadata"
+      }
+    }
+  }

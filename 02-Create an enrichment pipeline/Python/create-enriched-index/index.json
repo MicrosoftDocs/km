@@ -1,0 +1,116 @@
+{
+  "fields": [
+    {
+      "name": "id",
+      "type": "Edm.String",
+      "key": true,
+      "searchable": true,
+      "filterable": true,
+      "facetable": false,
+      "sortable": true
+    },
+    {
+      "name": "url",
+      "type": "Edm.String",
+      "sortable": true,
+      "searchable": true,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "file_name",
+      "type": "Edm.String",
+      "sortable": true,
+      "searchable": true,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "author",
+      "type": "Edm.String",
+      "sortable": true,
+      "searchable": true,
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "size",
+      "type": "Edm.Int64",
+      "sortable": true,
+      "searchable": false,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "last_modified",
+      "type": "Edm.DateTimeOffset",
+      "sortable": true,
+      "searchable": false,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "language",
+      "type": "Edm.String",
+      "sortable": false,
+      "searchable": false,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "sentiment",
+      "type": "Edm.Double",
+      "searchable": false,
+      "sortable": true,
+      "filterable": true,
+      "facetable": true
+    },
+    {
+      "name": "key_phrases",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "filterable": false,
+      "facetable": false
+    },
+    {
+      "name": "locations",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "links",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "image_descriptions",
+      "type": "Collection(Edm.String)",
+      "sortable": false,
+      "searchable": true,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "image_text",
+      "type": "Collection(Edm.String)",
+      "searchable": true,
+      "sortable": false,
+      "filterable": true,
+      "facetable": false
+    },
+    {
+      "name": "content",
+      "type": "Edm.String",
+      "searchable": true,
+      "sortable": false,
+      "filterable": false,
+      "facetable": false
+    }
+  ]
+}

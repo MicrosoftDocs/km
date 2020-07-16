@@ -1,0 +1,245 @@
+{
+"description": "Extract and enhance text",
+"skills":
+    [
+        {
+            "name": "get-language",
+            "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+            "context": "/document",
+            "inputs": [
+                {
+                "name": "text", "source": "/document/content"
+                }
+            ],
+                "outputs": [
+                    {
+                    "name": "languageCode",
+                    "targetName": "language"
+                    }
+                ]
+        },
+        {
+            "name": "get-image-descriptions",
+            "description": "Generate descriptions of images.",
+            "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+            "context": "/document/normalized_images/*",
+            "defaultLanguageCode": "en",
+            "visualFeatures": ["Description"],
+            "details": ["Landmarks"],
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": "/document/normalized_images/*"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "description",
+                    "targetName": "imageDescription"
+                }
+            ]
+        },
+        {
+            "name": "get-image-text",
+            "description": "Use OCR to extract text from images.",
+            "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+            "context": "/document/normalized_images/*",
+            "defaultLanguageCode": "en",
+            "detectOrientation": true,
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": "/document/normalized_images/*"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "text"
+                }
+            ]
+        },
+        {
+            "name": "merge-text",
+            "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+            "description": "Create merged_text, which includes OCR-extracted text from each image inserted at the right location in the content.",
+            "context": "/document",
+            "insertPreTag": "[",
+            "insertPostTag": "]",
+            "inputs": [
+                {
+                "name":"text", "source": "/document/content"
+                },
+                {
+                "name": "itemsToInsert", "source": "/document/normalized_images/*/text"
+                },
+                {
+                "name":"offsets", "source": "/document/normalized_images/*/contentOffset" 
+                }
+            ],
+            "outputs": [
+                {
+                "name": "mergedText"
+                }
+            ]
+        },
+        {
+            "name": "get-sentiment",
+            "description": "Detect sentiment.",
+            "@odata.type": "#Microsoft.Skills.Text.SentimentSkill",
+            "inputs": [
+                {
+                "name": "text",
+                "source": "/document/mergedText"
+                },
+                {
+                  "name": "languageCode",
+                  "source": "/document/language" 
+                }
+            ],
+                "outputs": [
+                    {
+                    "name": "score",
+                    "targetName": "sentimentScore"
+                    }
+                ]
+        },
+        {
+            "name": "get-text-entities",
+            "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
+            "categories": [ "location", "url" ],
+            "inputs": [
+                {
+                "name": "text",
+                "source": "/document/mergedText"
+                },
+                {
+                  "name": "languageCode",
+                  "source": "/document/language" 
+                }
+            ],
+            "outputs": [
+                {
+                "name": "locations"
+                },
+                {
+                "name": "urls"
+                }
+            ]
+        },
+        {
+            "name": "get-key-phrases",
+            "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+            "context": "/document",
+            "maxKeyPhraseCount": 5,
+            "inputs": [
+                {
+                "name": "text", "source": "/document/mergedText"
+                },
+                {
+                  "name": "languageCode",
+                  "source": "/document/language" 
+                }
+            ],
+            "outputs": [
+                {
+                "name": "keyPhrases"
+                }
+            ]
+        },
+        {
+            "name": "define-projection",
+            "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+            "context": "/document",
+            "description": "Prepare projection fields",
+            "inputs": [
+              {
+                "name": "file_id",
+                "source": "/document/id"
+              },
+              {
+                "name": "file_name",
+                "source": "/document/file_name"
+              },
+              {
+                "name": "url",
+                "source": "/document/url"
+              },
+              {
+                "name": "language",
+                "source": "/document/language"
+              },
+              {
+                "name": "key_phrases",
+                "source": "/document/keyPhrases/*"
+              },
+              {
+                "name": "sentiment_score",
+                "source": "/document/sentimentScore"
+              },
+              {
+                "name": "locations",
+                "source": "/document/locations/*"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "targetName": "knowledge_projection"
+              }
+            ]
+          }
+    ],
+    "cognitiveServices": {
+        "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+        "description": "cognitive-svc",
+        "key": null
+    },
+    "knowledgeStore":
+    { 
+        "storageConnectionString": null, 
+        "projections": [ 
+            { 
+                "tables": [  
+                 {
+                   "tableName": "docs",
+                   "generatedKeyName": "document_id", 
+                   "source": "/document/knowledge_projection" 
+                 }, 
+                 {
+                    "tableName": "KeyPhrases",
+                    "generatedKeyName": "keyphrase_id",
+                    "sourceContext": "/document/knowledge_projection/key_phrases/*",
+                    "inputs":[
+                        {"name": "key_phrase", "source": "/document/knowledge_projection/key_phrases/*"}] 
+                 }, 
+                 {
+                    "tableName": "SentimentScores",
+                    "generatedKeyName": "sentiment_id",
+                    "sourceContext": "/document/knowledge_projection/sentiment_score",
+                    "inputs":[
+                       {"name": "sentiment", "source": "/document/knowledge_projection/sentiment_score"}]
+                 }, 
+                 {
+                    "tableName": "Locations",
+                    "generatedKeyName": "location_id",
+                    "sourceContext": "/document/knowledge_projection/locations/*",
+                    "inputs":[
+                        {"name": "location", "source": "/document/knowledge_projection/locations/*"}] 
+                 }
+                ], 
+                "objects": [ 
+
+                ]      
+            },
+            {
+                "tables": [],
+                "objects": [
+                    {
+                        "storageContainer": "knowledge-data",
+                        "source": "/document/knowledge_projection"
+                    }
+                ]
+            }
+        ]     
+    } 
+} 

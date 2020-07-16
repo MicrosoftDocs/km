@@ -1,0 +1,9 @@
+{   
+    "name" : "margies-docs",  
+    "description" : "Documents in Margies website.",  
+    "type" : "azureblob",
+    "credentials" :
+    { "connectionString" : null
+    },  
+    "container" : { "name" : "margies" }
+} 

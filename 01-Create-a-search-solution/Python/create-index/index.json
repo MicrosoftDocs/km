@@ -1,0 +1,61 @@
+{
+    "fields": [
+      {
+        "name": "id",
+        "type": "Edm.String",
+        "key": true,
+        "searchable": true,
+        "filterable": true,
+        "facetable": false,
+        "sortable": true
+      },
+      {
+        "name": "url",
+        "type": "Edm.String",
+        "sortable": false,
+        "searchable": true,
+        "filterable": true,
+        "facetable": false
+      },
+      {
+        "name": "file_name",
+        "type": "Edm.String",
+        "sortable": true,
+        "searchable": true,
+        "filterable": true,
+        "facetable": false
+      },
+      {
+        "name": "author",
+        "type": "Edm.String",
+        "sortable": true,
+        "searchable": true,
+        "filterable": true,
+        "facetable": true
+      },
+      {
+        "name": "content",
+        "type": "Edm.String",
+        "sortable": false,
+        "searchable": true,
+        "filterable": true,
+        "facetable": false
+      },
+      {
+        "name": "size",
+        "type": "Edm.Int64",
+        "sortable": true,
+        "searchable": false,
+        "filterable": true,
+        "facetable": false
+      },
+      {
+        "name": "last_modified",
+        "type": "Edm.DateTimeOffset",
+        "sortable": true,
+        "searchable": false,
+        "filterable": true,
+        "facetable": false
+      }
+    ]
+  }

@@ -1,0 +1,179 @@
+{
+    "description": "Extract and enhance text",
+    "skills":
+        [
+            {
+                "name": "get-language",
+                "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+                "context": "/document",
+                "inputs": [
+                    {
+                    "name": "text", "source": "/document/content"
+                    }
+                ],
+                    "outputs": [
+                        {
+                        "name": "languageCode",
+                        "targetName": "language"
+                        }
+                    ]
+            },
+            {
+                "name": "get-image-descriptions",
+                "description": "Generate descriptions of images.",
+                "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+                "context": "/document/normalized_images/*",
+                "defaultLanguageCode": "en",
+                "visualFeatures": ["Description"],
+                "details": ["Landmarks"],
+                "inputs": [
+                    {
+                        "name": "image",
+                        "source": "/document/normalized_images/*"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "description",
+                        "targetName": "imageDescription"
+                    }
+                ]
+            },
+            {
+                "name": "get-image-text",
+                "description": "Use OCR to extract text from images.",
+                "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+                "context": "/document/normalized_images/*",
+                "defaultLanguageCode": "en",
+                "detectOrientation": true,
+                "inputs": [
+                    {
+                        "name": "image",
+                        "source": "/document/normalized_images/*"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "text"
+                    }
+                ]
+            },
+            {
+                "name": "merge-text",
+                "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+                "description": "Create merged_text, which includes OCR-extracted text from each image inserted at the right location in the content.",
+                "context": "/document",
+                "insertPreTag": "[",
+                "insertPostTag": "]",
+                "inputs": [
+                    {
+                    "name":"text", "source": "/document/content"
+                    },
+                    {
+                    "name": "itemsToInsert", "source": "/document/normalized_images/*/text"
+                    },
+                    {
+                    "name":"offsets", "source": "/document/normalized_images/*/contentOffset" 
+                    }
+                ],
+                "outputs": [
+                    {
+                    "name": "mergedText"
+                    }
+                ]
+            },
+            {
+                "name": "get-sentiment",
+                "description": "Detect sentiment.",
+                "@odata.type": "#Microsoft.Skills.Text.SentimentSkill",
+                "inputs": [
+                    {
+                    "name": "text",
+                    "source": "/document/mergedText"
+                    },
+                    {
+                      "name": "languageCode",
+                      "source": "/document/language" 
+                    }
+                ],
+                    "outputs": [
+                        {
+                        "name": "score",
+                        "targetName": "sentimentScore"
+                        }
+                    ]
+            },
+            {
+                "name": "get-text-entities",
+                "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
+                "categories": [ "location", "url" ],
+                "inputs": [
+                    {
+                    "name": "text",
+                    "source": "/document/mergedText"
+                    },
+                    {
+                      "name": "languageCode",
+                      "source": "/document/language" 
+                    }
+                ],
+                "outputs": [
+                    {
+                    "name": "locations"
+                    },
+                    {
+                    "name": "urls"
+                    }
+                ]
+            },
+            {
+                "name": "get-key-phrases",
+                "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+                "context": "/document",
+                "maxKeyPhraseCount": 5,
+                "inputs": [
+                    {
+                    "name": "text", "source": "/document/mergedText"
+                    },
+                    {
+                      "name": "languageCode",
+                      "source": "/document/language" 
+                    }
+                ],
+                "outputs": [
+                    {
+                    "name": "keyPhrases"
+                    }
+                ]
+            },
+            {
+                "name": "get-top-words",
+                "@odata.type": "#Microsoft.Skills.Custom.WebApiSkill",
+                "description": "custom skill to get top 10 most frequent words",
+                "uri": "https://YOUR-FUNCTION-APP-URL",
+                "batchSize":1,
+                "context": "/document",
+                "inputs": [
+                  {
+                    "name": "text",
+                    "source": "/document/mergedText"
+                  },
+                {
+                  "name":"language",
+                  "source": "/document/language"
+                }  
+                ],
+                "outputs": [
+                  {
+                    "name": "text",
+                    "targetName": "topWords"
+                  }
+                ]
+              }
+        ],
+        "cognitiveServices": {
+            "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+            "description": "cognitive-svc",
+            "key": null
+        }
+    } 

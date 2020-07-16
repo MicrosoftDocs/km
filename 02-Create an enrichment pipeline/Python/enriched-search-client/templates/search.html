@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}<hr/>
+<div class="searchBoxForm">
+<form name="facet_form" action="/filter" method="GET">
+    <p>Search:{{ search_terms }}</p>
+    <p>Results:{{ hitcount }}</p>
+    <p class="filterTitle">Filter by author:</p>
+    <input name="search" type="hidden" value="{{ search_terms }}"/>
+    {% for facet in facets: %}
+        <div><input name="facet" value="{{ facet['value'] }}" type="radio">{{ facet['value'] }}</input></div>
+    {% endfor %}
+    <p class="sortList">Sort by: <select id="sort" name="sort">
+        <option value="relevance">Relevance</option>
+        <option value="name" {% if sort_field == 'name' %}selected {% endif %}>Name</option>
+        <option value="size" {% if sort_field == 'size' %}selected {% endif %}>Largest file size</option>
+        <option value="date" {% if sort_field == 'date' %}selected {% endif %}>Most recently modified</option>
+        <option value="sentiment" {% if sort_field == 'sentiment' %}selected {% endif %}>Positive to negative</option>
+      </select>
+    </p>
+    <input name="refine" type="submit" value="Refine Results" class="refineButton"></input>
+</form>
+</div>
+{% for search_result in search_results: %}
+<div class="result">
+    <p class="resultLink"><a href="{{ search_result['url'] }}" target="_blank">{{ search_result['file_name'] }}</a></p>
+    <div>{% for highlight in search_result['@search.highlights']['content']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+    {% if search_result['@search.highlights']['image_descriptions']|length > 0 %}
+        <div>Image Data: {% for highlight in search_result['@search.highlights']['image_descriptions']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+    {% endif %}
+    <ul class="resultAttributes">
+        <li>Author: {{ search_result['author'] }}</li>
+        <li>Size: {{ search_result['size'] }} bytes</li>
+        <li>Modified: {{ search_result['last_modified'] }}</li>
+        <li>Language: {{ search_result['language'] }}</li>
+        <li>Sentiment: {% if search_result['sentiment'] > 0.5 %} &#128578; {% else %} &#128577; {% endif %} {{ search_result['sentiment'] }}</li>
+        <li>Key Phrases:</li>
+            <ul class="resultAttributes">
+                {% for key_phrase in search_result['key_phrases']: %}
+                <li>{{ key_phrase }}</li>
+                {% endfor %}
+            </ul>
+        {% if search_result['locations']|length > 0 %}
+        <li>Locations:</li>
+            <ul class="resultAttributes">
+                {% for location in search_result['locations']: %}
+                <li>{{ location }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if search_result['links']|length > 0 %}
+        <li>Links:</li>
+            <ul class="resultAttributes">
+                {% for link in search_result['links']: %}
+                <li>{{ link }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if search_result['top_words']|length > 0 %}
+        <li>Top Words:</li>
+            <ul class="resultAttributes">
+                {% for word in search_result['top_words']: %}
+                <li>{{ word }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </ul>
+</div>
+{% endfor %}
+{% endblock %}
