@@ -60,7 +60,7 @@ namespace search_client.Pages
 
                 // Create a service and index client.
                 SearchServiceClient _serviceClient = new SearchServiceClient(searchServiceName, new SearchCredentials(queryApiKey));
-                ISearchIndexClient  _indexClient = _serviceClient.Indexes.GetClient("margies-index");
+                ISearchIndexClient  _indexClient = _serviceClient.Indexes.GetClient("margies-index-cs");
 
                 var parameters = new SearchParameters{
                     Select = new[] { "url", "file_name", "author", "size", "last_modified" },

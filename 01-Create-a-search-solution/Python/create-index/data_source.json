@@ -1,6 +1,6 @@
 {   
-    "name" : "margies-docs",  
-    "description" : "Documents in Margies website.",  
+    "name" : "margies-docs-py",  
+    "description" : "Documents for search.",  
     "type" : "azureblob",
     "credentials" :
     { "connectionString" : null

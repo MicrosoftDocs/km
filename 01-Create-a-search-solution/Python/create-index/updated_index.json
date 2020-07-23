@@ -12,7 +12,7 @@
       {
         "name": "url",
         "type": "Edm.String",
-        "sortable": true,
+        "sortable": false,
         "searchable": true,
         "filterable": true,
         "facetable": false
@@ -40,7 +40,7 @@
         "searchable": true,
         "filterable": true,
         "facetable": false,
-        "synonymMaps":["locationsynonyms"]
+        "synonymMaps":["margies-synonyms-py"]
       },
       {
         "name": "size",

@@ -1,7 +1,7 @@
 {
-    "name":"margies-indexer", 
-    "dataSourceName" : "margies-docs",
-    "targetIndexName" : "margies-index",
+    "name":"margies-indexer-py", 
+    "dataSourceName" : "margies-docs-py",
+    "targetIndexName" : "margies-index-py",
     "fieldMappings" : [
           {
             "sourceFieldName" : "metadata_storage_path",

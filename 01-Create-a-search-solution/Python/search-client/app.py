@@ -61,7 +61,7 @@ def search():
         })
 
         # submit the query and get the results
-        result = azsearch_query(index="margies-index", params=searchParams)
+        result = azsearch_query(index="margies-index-py", params=searchParams)
         hits = result['@odata.count']
         facets = result['@search.facets']['author']
         results = result["value"]
@@ -116,7 +116,7 @@ def filter():
             'highlight':'content-3',
             'api-version':'2020-06-30-Preview'
         })
-        result = azsearch_query(index="margies-index", params=searchParams)
+        result = azsearch_query(index="margies-index-py", params=searchParams)
         hits = result['@odata.count']
         facets = result['@search.facets']['author']
         results = result["value"]
