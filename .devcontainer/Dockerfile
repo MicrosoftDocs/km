@@ -46,6 +46,7 @@ RUN apt-get update \
     && pip3 --disable-pip-version-check --no-cache-dir install flask \
     && pip3 --disable-pip-version-check --no-cache-dir install requests \
     && pip3 --disable-pip-version-check --no-cache-dir install python-dotenv \
+    && pip3 --disable-pip-version-check --no-cache-dir install pylint \
     #
     # [Optional] Install Node.js for ASP.NET Core Web Applicationss
     && if [ "$INSTALL_NODE" = "true" ]; then \
