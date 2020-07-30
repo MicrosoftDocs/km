@@ -23,22 +23,34 @@
 {% for search_result in search_results: %}
 <div class="result">
     <p class="resultLink"><a href="{{ search_result['url'] }}" target="_blank">{{ search_result['file_name'] }}</a></p>
-    <div>{% for highlight in search_result['@search.highlights']['content']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
-    {% if search_result['@search.highlights']['image_descriptions']|length > 0 %}
-        <div>Image Data: {% for highlight in search_result['@search.highlights']['image_descriptions']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+    {% if search_result['@search.highlights'] is defined %}
+        {% if search_result['@search.highlights']['content']|length > 0 %}
+            <div>{% for highlight in search_result['@search.highlights']['content']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+        {% endif %}
+        {% if search_result['@search.highlights']['image_captions']|length > 0 %}
+            <div>{% for highlight in search_result['@search.highlights']['image_captions']: %} <p class='resultExtract'>Image caption: {{ highlight|safe }}</p> {% endfor %}</div>
+        {% endif %}
     {% endif %}
     <ul class="resultAttributes">
         <li>Author: {{ search_result['author'] }}</li>
         <li>Size: {{ search_result['size'] }} bytes</li>
         <li>Modified: {{ search_result['last_modified'] }}</li>
         <li>Language: {{ search_result['language'] }}</li>
-        <li>Sentiment: {% if search_result['sentiment'] > 0.5 %} &#128578; {% else %} &#128577; {% endif %} {{ search_result['sentiment'] }}</li>
+        <li>Sentiment: {% if search_result['sentiment'] >= 0.5 %} &#128578; {% else %} &#128577; {% endif %} {{ search_result['sentiment'] }}</li>
         <li>Key Phrases:</li>
             <ul class="resultAttributes">
                 {% for key_phrase in search_result['key_phrases']: %}
                 <li>{{ key_phrase }}</li>
                 {% endfor %}
             </ul>
+        {% if search_result['image_description']|length > 0 %}
+        <li>Image Tags:</li>
+            <ul class="resultAttributes">
+                {% for image in search_result['image_description']: %}
+                <li>{{ image['tags'] }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         {% if search_result['locations']|length > 0 %}
         <li>Locations:</li>
             <ul class="resultAttributes">

@@ -2,7 +2,6 @@ echo "Creating Azure resources..."
 uuid=$(cat /proc/sys/kernel/random/uuid)
 clean_uuid=${uuid//[-]/}
 location=$1
-az login --output none
 echo "Creating resource group..."
 az group create --name rg${clean_uuid:0:18} --location $location  --output none
 echo "Creating storage..."

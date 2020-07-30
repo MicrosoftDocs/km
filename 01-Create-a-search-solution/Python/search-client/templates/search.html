@@ -27,7 +27,11 @@
         <li>Size: {{ search_result['size'] }} bytes</li>
         <li>Modified: {{ search_result['last_modified'] }}</li>
     </ul>
-    <div>{% for highlight in search_result['@search.highlights']['content']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+    {% if search_result['@search.highlights'] is defined %}
+        {% if search_result['@search.highlights']['content']|length > 0 %}
+            <div>{% for highlight in search_result['@search.highlights']['content']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+        {% endif %}
+    {% endif %}
 </div>
 {% endfor %}
 {% endblock %}

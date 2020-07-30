@@ -56,12 +56,12 @@ def search():
             'queryType':'simple',
             '$select':'*',
             'facet':'author',
-            'highlight':'content-3,image_descriptions-1',
+            'highlight':'content-3,image_captions-3',
             'api-version':'2020-06-30-Preview'
         })
 
         # submit the query and get the results
-        result = azsearch_query(index="margies-index", params=searchParams)
+        result = azsearch_query(index="margies-index-py", params=searchParams)
         hits = result['@odata.count']
         facets = result['@search.facets']['author']
         results = result["value"]
@@ -115,10 +115,10 @@ def filter():
             'facet':'author',
             '$filter':facet_filter,
             '$orderby': sort_expression,
-            'highlight':'content-3,image_descriptions-1',
+            'highlight':'content-3,image_captions-3',
             'api-version':'2020-06-30-Preview'
         })
-        result = azsearch_query(index="margies-index", params=searchParams)
+        result = azsearch_query(index="margies-index-py", params=searchParams)
         hits = result['@odata.count']
         facets = result['@search.facets']['author']
         results = result["value"]

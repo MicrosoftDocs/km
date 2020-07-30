@@ -1,5 +1,5 @@
 {
-"description": "Extract and enhance text",
+"description": "Extract and enrich data",
 "skills":
     [
         {
@@ -23,9 +23,7 @@
             "description": "Generate descriptions of images.",
             "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
             "context": "/document/normalized_images/*",
-            "defaultLanguageCode": "en",
-            "visualFeatures": ["Description"],
-            "details": ["Landmarks"],
+            "visualFeatures": ["description"],
             "inputs": [
                 {
                     "name": "image",
@@ -44,7 +42,6 @@
             "description": "Use OCR to extract text from images.",
             "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
             "context": "/document/normalized_images/*",
-            "defaultLanguageCode": "en",
             "detectOrientation": true,
             "inputs": [
                 {
@@ -105,6 +102,7 @@
         },
         {
             "name": "get-text-entities",
+            "description": "Extract locations and URLs",
             "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
             "categories": [ "location", "url" ],
             "inputs": [
@@ -128,6 +126,7 @@
         },
         {
             "name": "get-key-phrases",
+            "description": "Extract key phrases",
             "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
             "context": "/document",
             "maxKeyPhraseCount": 5,
@@ -149,7 +148,7 @@
     ],
     "cognitiveServices": {
         "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
-        "description": "cognitive-svc",
+        "description": "Cognitive Services account",
         "key": null
     }
 } 

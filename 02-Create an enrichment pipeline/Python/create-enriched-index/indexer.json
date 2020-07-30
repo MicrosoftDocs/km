@@ -1,8 +1,19 @@
 {
-    "name":"margies-indexer", 
-    "dataSourceName" : "margies-docs",
-    "targetIndexName" : "margies-index",
-    "skillsetName" : "margies-skillset",
+    "name":"margies-indexer-py",
+    "description" : "Indexer",
+    "dataSourceName" : "margies-docs-py",
+    "targetIndexName" : "margies-index-py",
+    "skillsetName" : "margies-skillset-py",
+    "parameters":
+    {
+      "maxFailedItems":-1,
+      "maxFailedItemsPerBatch":-1,
+      "configuration": 
+      {
+          "dataToExtract": "contentAndMetadata",
+          "imageAction": "generateNormalizedImages"
+      }
+    },
     "fieldMappings" : [
         {
           "sourceFieldName" : "metadata_storage_path",
@@ -35,7 +46,11 @@
   [
         {
             "sourceFieldName": "/document/normalized_images/*/imageDescription", 
-            "targetFieldName": "image_descriptions"
+            "targetFieldName": "image_description"
+        },
+        {
+            "sourceFieldName": "/document/normalized_images/*/imageDescription/captions/*/text", 
+            "targetFieldName": "image_captions"
         },
         {
             "sourceFieldName": "/document/normalized_images/*/text",
@@ -65,15 +80,5 @@
           "sourceFieldName" : "/document/keyPhrases/*", 
           "targetFieldName" : "key_phrases"
         }
-  ],
-  "parameters":
-  {
-    "maxFailedItems":-1,
-    "maxFailedItemsPerBatch":-1,
-    "configuration": 
-    {
-        "dataToExtract": "contentAndMetadata",
-        "imageAction": "generateNormalizedImages"
-    }
-  }
+  ]
 } 

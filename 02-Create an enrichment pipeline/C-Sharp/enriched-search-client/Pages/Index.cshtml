@@ -1,0 +1,138 @@
+@page
+@model IndexModel
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@{
+    ViewData["Title"] = "Margie's Travel";
+}
+
+<div>
+    <h1 class="display-4">Search</h1>
+    
+
+    <form name="searchForm" method="get">
+        <input name="search" type="text"/>
+        <input name="submit" type="submit" value="Search"/>
+        <p>@Model.SearchTerms</p>
+    </form>
+
+
+
+        @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+        {
+
+            <input name="search" type="hidden" value="@Model.SearchTerms"/>
+
+            @if (Model != null)
+            {
+                @if (Model.resultList != null){
+                    // Show the result count.
+                    <p>
+                        @Html.DisplayFor(m => m.resultList.Results.Count) Results
+                    </p>
+
+                    List<string> authors = Model.resultList.Facets["author"].Select(x => x.Value.ToString()).ToList();
+
+                        if (authors.Count > 0)
+                        {
+                            <p class="filterTitle">Filter by author:</p>
+                                @for (var c = 0; c < authors.Count; c++)
+                                {
+                                    <div><input name="facet" value="@authors[c]" type="radio"> @authors[c] </div>
+
+                                }
+                        }
+
+                        <p class="sortList">Sort by: <select id="sort" name="sort">
+                            <option value="search.score()" selected="@(Model.SortOrder == "search.score()")">Relevance</option>
+                            <option value="file_name asc" selected="@(Model.SortOrder == "file_name asc")">File name</option>
+                            <option value="size desc" selected="@(Model.SortOrder == "size desc")">Largest file size</option>
+                            <option value="last_modified desc" selected="@(Model.SortOrder == "last_modified desc")">Most recently modified</option>
+                            <option value="sentiment desc" selected="@(Model.SortOrder == "sentiment desc")">Positive to negative</option>
+                        </select>
+                        </p>
+                        <input name="refine" type="submit" value="Refine Results" class="refineButton"></input>
+
+                    @for (var i = 0; i < Model.resultList.Results.Count; i++)
+                    {
+                        <div class="result">
+                            <p class="resultLink"><a href="@Model.resultList.Results[i].Document.url" target="_blank">@Model.resultList.Results[i].Document.file_name</a></p>
+                            @if (Model.resultList.Results[i].Highlights != null){
+                                @foreach (var highlight in Model.resultList.Results[i].Highlights)
+                                {
+                                    @foreach (var val in highlight.Value)
+                                    {
+                                    <div class='resultExtract'>@Html.Raw(val)</div>
+                                    }
+                                }
+                            }
+                            <ul class="resultAttributes">
+                                <li>Author: @Model.resultList.Results[i].Document.author</li>
+                                <li>Size: @Model.resultList.Results[i].Document.size bytes</li>
+                                <li>Modified: @Model.resultList.Results[i].Document.last_modified</li>
+                                <li>Language: @Model.resultList.Results[i].Document.language</li>
+                                <li>Sentiment: @if(Model.resultList.Results[i].Document.sentiment >= 0.5){
+                                                    @Html.Raw("&#128578;")
+                                                    }
+                                                    else{
+                                                       @Html.Raw("&#128577")
+                                                    }
+                                    @Model.resultList.Results[i].Document.sentiment</li>
+                                <li>Key Phrases:</li>
+                                    <ul class="resultAttributes">
+                                        @foreach (var key_phrase in Model.resultList.Results[i].Document.key_phrases.Take(5))
+                                        {
+                                            <li>@key_phrase</li>
+                                        }
+                                    </ul>
+                                @if(Model.resultList.Results[i].Document.image_descriptions !=  null){
+                                    <li>Image Tags:</li>
+                                        <ul class="resultAttributes">
+                                        @foreach (var image in Model.resultList.Results[i].Document.image_descriptions)
+                                            {
+                                                <li>@JsonSerializer.Serialize(image.tags.ToList())</li>
+                                            }
+                                        </ul>
+                                }
+                                @if(Model.resultList.Results[i].Document.locations !=  null){
+                                    <li>Locations:</li>
+                                        <ul class="resultAttributes">
+                                        @foreach (var location in Model.resultList.Results[i].Document.locations.Take(6))
+                                            {
+                                                <li>@location</li>
+                                            }
+                                        </ul>
+                                }
+                                @if(Model.resultList.Results[i].Document.links !=  null){
+                                    <li>Links:</li>
+                                        <ul class="resultAttributes">
+                                        @foreach (var link in Model.resultList.Results[i].Document.links.Take(6))
+                                            {
+                                                <li>@link</li>
+                                            }
+                                        </ul>
+                                }
+                                @if(Model.resultList.Results[i].Document.top_words !=  null){
+                                    <li>Top Words:</li>
+                                        <ul class="resultAttributes">
+                                        @foreach (var word in Model.resultList.Results[i].Document.top_words)
+                                            {
+                                                <li>@word</li>
+                                            }
+                                        </ul>
+                                }
+                            </ul>
+                            
+                        <hr/>
+                        </div>
+                    }
+
+                }
+                else
+                {
+                    <div><img src="images/margies.jpg"/></div>
+                }
+            }
+        }
+
+</div>

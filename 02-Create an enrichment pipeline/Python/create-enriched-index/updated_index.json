@@ -12,7 +12,7 @@
     {
       "name": "url",
       "type": "Edm.String",
-      "sortable": true,
+      "sortable": false,
       "searchable": true,
       "filterable": true,
       "facetable": false
@@ -89,7 +89,40 @@
       "facetable": false
     },
     {
-      "name": "image_descriptions",
+      "name": "image_description",
+      "type": "Collection(Edm.ComplexType)",
+      "fields": [
+        {
+            "name": "tags",
+            "type": "Collection(Edm.String)",
+            "searchable": true,
+            "filterable": false,
+            "facetable": false
+        },
+        {
+            "name": "captions",
+            "type": "Collection(Edm.ComplexType)",
+            "fields": [
+                {
+                    "name": "text",
+                    "type": "Edm.String",
+                    "searchable": true,
+                    "filterable": false,
+                    "facetable": false
+                },
+                {
+                    "name": "confidence",
+                    "type": "Edm.Double",
+                    "searchable": false,
+                    "filterable": false,
+                    "facetable": false
+                }
+            ]
+        }
+    ]
+    },
+    {
+      "name": "image_captions",
       "type": "Collection(Edm.String)",
       "sortable": false,
       "searchable": true,
