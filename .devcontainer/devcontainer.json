@@ -15,7 +15,8 @@
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.linting.pylintPath": "pylint",
-    "python.languageServer": "Microsoft"
+    "python.languageServer": "Microsoft",
+    "python.showStartPage": false
   },
 
 }
