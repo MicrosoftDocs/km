@@ -23,9 +23,7 @@
             "description": "Generate descriptions of images.",
             "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
             "context": "/document/normalized_images/*",
-            "defaultLanguageCode": "en",
-            "visualFeatures": ["Description"],
-            "details": ["Landmarks"],
+            "visualFeatures": ["description"],
             "inputs": [
                 {
                     "name": "image",
@@ -44,7 +42,6 @@
             "description": "Use OCR to extract text from images.",
             "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
             "context": "/document/normalized_images/*",
-            "defaultLanguageCode": "en",
             "detectOrientation": true,
             "inputs": [
                 {
@@ -105,6 +102,7 @@
         },
         {
             "name": "get-text-entities",
+            "description": "Extract locations and URLs",
             "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
             "categories": [ "location", "url" ],
             "inputs": [
@@ -128,6 +126,7 @@
         },
         {
             "name": "get-key-phrases",
+            "description": "Extract key phrases",
             "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
             "context": "/document",
             "maxKeyPhraseCount": 5,
@@ -148,9 +147,9 @@
         },
         {
             "name": "define-projection",
+            "description": "Prepare projection fields",
             "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
             "context": "/document",
-            "description": "Prepare projection fields",
             "inputs": [
               {
                 "name": "file_id",
@@ -169,16 +168,20 @@
                 "source": "/document/language"
               },
               {
+                "name": "sentiment",
+                "source": "/document/sentimentScore"
+              },
+              {
                 "name": "key_phrases",
                 "source": "/document/keyPhrases/*"
               },
               {
-                "name": "sentiment_score",
-                "source": "/document/sentimentScore"
-              },
-              {
                 "name": "locations",
                 "source": "/document/locations/*"
+              },
+              {
+                "name": "image_tags",
+                "source": "/document/normalized_images/*/imageDescription/tags/*"
               }
             ],
             "outputs": [
@@ -197,48 +200,58 @@
     "knowledgeStore":
     { 
         "storageConnectionString": null, 
-        "projections": [ 
-            { 
-                "tables": [  
-                 {
-                   "tableName": "docs",
-                   "generatedKeyName": "document_id", 
-                   "source": "/document/knowledge_projection" 
-                 }, 
-                 {
-                    "tableName": "KeyPhrases",
-                    "generatedKeyName": "keyphrase_id",
-                    "sourceContext": "/document/knowledge_projection/key_phrases/*",
-                    "inputs":[
-                        {"name": "key_phrase", "source": "/document/knowledge_projection/key_phrases/*"}] 
-                 }, 
-                 {
-                    "tableName": "SentimentScores",
-                    "generatedKeyName": "sentiment_id",
-                    "sourceContext": "/document/knowledge_projection/sentiment_score",
-                    "inputs":[
-                       {"name": "sentiment", "source": "/document/knowledge_projection/sentiment_score"}]
-                 }, 
-                 {
-                    "tableName": "Locations",
-                    "generatedKeyName": "location_id",
-                    "sourceContext": "/document/knowledge_projection/locations/*",
-                    "inputs":[
-                        {"name": "location", "source": "/document/knowledge_projection/locations/*"}] 
-                 }
-                ], 
-                "objects": [ 
-
-                ]      
-            },
+        "projections": [
             {
-                "tables": [],
                 "objects": [
                     {
-                        "storageContainer": "knowledge-data",
+                        "storageContainer": "margies-knowledge",
                         "source": "/document/knowledge_projection"
                     }
+                ],
+                "tables": [],
+                "files": []
+            },
+            {
+                "objects": [],
+                "tables": [],
+                "files": [
+                    {
+                        "storageContainer": "margies-images",
+                        "source": "/document/normalized_images/*"
+                    }
                 ]
+            },
+            {
+                "objects": [],
+                "tables": [  
+                    {
+                        "tableName": "KeyPhrases",
+                        "generatedKeyName": "keyphrase_id",
+                        "sourceContext": "/document/knowledge_projection/key_phrases/*",
+                        "inputs":[
+                            {"name": "key_phrase", "source": "/document/knowledge_projection/key_phrases/*"}] 
+                    },
+                    {
+                        "tableName": "Locations",
+                        "generatedKeyName": "location_id",
+                        "sourceContext": "/document/knowledge_projection/locations/*",
+                        "inputs":[
+                            {"name": "location", "source": "/document/knowledge_projection/locations/*"}] 
+                    }, 
+                    {
+                        "tableName": "ImageTags",
+                        "generatedKeyName": "tag_id",
+                        "sourceContext": "/document/knowledge_projection/image_tags/*",
+                        "inputs":[
+                            {"name": "tag", "source": "/document/knowledge_projection/image_tags/*"}] 
+                    },
+                    {
+                        "tableName": "docs",
+                        "generatedKeyName": "document_id", 
+                        "source": "/document/knowledge_projection" 
+                        }
+                ],
+                "files": []
             }
         ]     
     } 

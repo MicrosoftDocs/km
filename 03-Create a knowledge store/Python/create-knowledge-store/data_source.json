@@ -1,5 +1,5 @@
 {   
-    "name" : "margies-docs",  
+    "name" : "margies-docs-py",  
     "description" : "Documents in Margies website.",  
     "type" : "azureblob",
     "credentials" :

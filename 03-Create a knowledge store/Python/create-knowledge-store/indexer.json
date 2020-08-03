@@ -1,0 +1,84 @@
+{
+  "name":"margies-indexer-py",
+  "description" : "Indexer",
+  "dataSourceName" : "margies-docs-py",
+  "targetIndexName" : "margies-index-py",
+  "skillsetName" : "margies-skillset-py",
+  "parameters":
+  {
+    "maxFailedItems":-1,
+    "maxFailedItemsPerBatch":-1,
+    "configuration": 
+    {
+        "dataToExtract": "contentAndMetadata",
+        "imageAction": "generateNormalizedImages"
+    }
+  },
+  "fieldMappings" : [
+      {
+        "sourceFieldName" : "metadata_storage_path",
+        "targetFieldName" : "id",
+        "mappingFunction" : 
+          { "name" : "base64Encode" }
+      },
+      {
+        "sourceFieldName" : "metadata_storage_path",
+        "targetFieldName" : "url"
+      },
+      {
+        "sourceFieldName" : "metadata_storage_name",
+        "targetFieldName" : "file_name"
+      },
+      {
+        "sourceFieldName" : "metadata_author",
+        "targetFieldName" : "author"
+      },
+      {
+        "sourceFieldName" : "metadata_storage_size",
+        "targetFieldName" : "size"
+      },
+      {
+        "sourceFieldName" : "metadata_storage_last_modified",
+        "targetFieldName" : "last_modified"
+      }
+ ],
+"outputFieldMappings" : 
+[
+      {
+          "sourceFieldName": "/document/normalized_images/*/imageDescription", 
+          "targetFieldName": "image_description"
+      },
+      {
+          "sourceFieldName": "/document/normalized_images/*/imageDescription/captions/*/text", 
+          "targetFieldName": "image_captions"
+      },
+      {
+          "sourceFieldName": "/document/normalized_images/*/text",
+          "targetFieldName": "image_text"
+      },
+      {
+          "sourceFieldName": "/document/mergedText", 
+          "targetFieldName": "content"
+      },
+      {
+        "sourceFieldName": "/document/language", 
+        "targetFieldName": "language"
+      },
+      {
+          "sourceFieldName": "/document/sentimentScore", 
+          "targetFieldName": "sentiment"
+      },
+      {
+        "sourceFieldName" : "/document/locations", 
+        "targetFieldName" : "locations"
+      },
+      {
+        "sourceFieldName" : "/document/urls", 
+        "targetFieldName" : "links"
+      },
+      {
+        "sourceFieldName" : "/document/keyPhrases/*", 
+        "targetFieldName" : "key_phrases"
+      }
+]
+} 

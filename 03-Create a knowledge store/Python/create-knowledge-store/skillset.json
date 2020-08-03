@@ -1,0 +1,258 @@
+{
+"description": "Extract and enhance text",
+"skills":
+    [
+        {
+            "name": "get-language",
+            "@odata.type": "#Microsoft.Skills.Text.LanguageDetectionSkill",
+            "context": "/document",
+            "inputs": [
+                {
+                "name": "text", "source": "/document/content"
+                }
+            ],
+                "outputs": [
+                    {
+                    "name": "languageCode",
+                    "targetName": "language"
+                    }
+                ]
+        },
+        {
+            "name": "get-image-descriptions",
+            "description": "Generate descriptions of images.",
+            "@odata.type": "#Microsoft.Skills.Vision.ImageAnalysisSkill",
+            "context": "/document/normalized_images/*",
+            "visualFeatures": ["description"],
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": "/document/normalized_images/*"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "description",
+                    "targetName": "imageDescription"
+                }
+            ]
+        },
+        {
+            "name": "get-image-text",
+            "description": "Use OCR to extract text from images.",
+            "@odata.type": "#Microsoft.Skills.Vision.OcrSkill",
+            "context": "/document/normalized_images/*",
+            "detectOrientation": true,
+            "inputs": [
+                {
+                    "name": "image",
+                    "source": "/document/normalized_images/*"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "text"
+                }
+            ]
+        },
+        {
+            "name": "merge-text",
+            "@odata.type": "#Microsoft.Skills.Text.MergeSkill",
+            "description": "Create merged_text, which includes OCR-extracted text from each image inserted at the right location in the content.",
+            "context": "/document",
+            "insertPreTag": "[",
+            "insertPostTag": "]",
+            "inputs": [
+                {
+                "name":"text", "source": "/document/content"
+                },
+                {
+                "name": "itemsToInsert", "source": "/document/normalized_images/*/text"
+                },
+                {
+                "name":"offsets", "source": "/document/normalized_images/*/contentOffset" 
+                }
+            ],
+            "outputs": [
+                {
+                "name": "mergedText"
+                }
+            ]
+        },
+        {
+            "name": "get-sentiment",
+            "description": "Detect sentiment.",
+            "@odata.type": "#Microsoft.Skills.Text.SentimentSkill",
+            "inputs": [
+                {
+                "name": "text",
+                "source": "/document/mergedText"
+                },
+                {
+                  "name": "languageCode",
+                  "source": "/document/language" 
+                }
+            ],
+                "outputs": [
+                    {
+                    "name": "score",
+                    "targetName": "sentimentScore"
+                    }
+                ]
+        },
+        {
+            "name": "get-text-entities",
+            "description": "Extract locations and URLs",
+            "@odata.type": "#Microsoft.Skills.Text.EntityRecognitionSkill",
+            "categories": [ "location", "url" ],
+            "inputs": [
+                {
+                "name": "text",
+                "source": "/document/mergedText"
+                },
+                {
+                  "name": "languageCode",
+                  "source": "/document/language" 
+                }
+            ],
+            "outputs": [
+                {
+                "name": "locations"
+                },
+                {
+                "name": "urls"
+                }
+            ]
+        },
+        {
+            "name": "get-key-phrases",
+            "description": "Extract key phrases",
+            "@odata.type": "#Microsoft.Skills.Text.KeyPhraseExtractionSkill",
+            "context": "/document",
+            "maxKeyPhraseCount": 5,
+            "inputs": [
+                {
+                "name": "text", "source": "/document/mergedText"
+                },
+                {
+                  "name": "languageCode",
+                  "source": "/document/language" 
+                }
+            ],
+            "outputs": [
+                {
+                "name": "keyPhrases"
+                }
+            ]
+        },
+        {
+            "name": "define-projection",
+            "description": "Prepare projection fields",
+            "@odata.type": "#Microsoft.Skills.Util.ShaperSkill",
+            "context": "/document",
+            "inputs": [
+              {
+                "name": "file_id",
+                "source": "/document/id"
+              },
+              {
+                "name": "file_name",
+                "source": "/document/file_name"
+              },
+              {
+                "name": "url",
+                "source": "/document/url"
+              },
+              {
+                "name": "language",
+                "source": "/document/language"
+              },
+              {
+                "name": "sentiment",
+                "source": "/document/sentimentScore"
+              },
+              {
+                "name": "key_phrases",
+                "source": "/document/keyPhrases/*"
+              },
+              {
+                "name": "locations",
+                "source": "/document/locations/*"
+              },
+              {
+                "name": "image_tags",
+                "source": "/document/normalized_images/*/imageDescription/tags/*"
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "targetName": "knowledge_projection"
+              }
+            ]
+          }
+    ],
+    "cognitiveServices": {
+        "@odata.type": "#Microsoft.Azure.Search.CognitiveServicesByKey",
+        "description": "cognitive-svc",
+        "key": null
+    },
+    "knowledgeStore":
+    { 
+        "storageConnectionString": null, 
+        "projections": [
+            {
+                "objects": [
+                    {
+                        "storageContainer": "margies-knowledge",
+                        "source": "/document/knowledge_projection"
+                    }
+                ],
+                "tables": [],
+                "files": []
+            },
+            {
+                "objects": [],
+                "tables": [],
+                "files": [
+                    {
+                        "storageContainer": "margies-images",
+                        "source": "/document/normalized_images/*"
+                    }
+                ]
+            },
+            {
+                "objects": [],
+                "tables": [  
+                    {
+                        "tableName": "KeyPhrases",
+                        "generatedKeyName": "keyphrase_id",
+                        "sourceContext": "/document/knowledge_projection/key_phrases/*",
+                        "inputs":[
+                            {"name": "key_phrase", "source": "/document/knowledge_projection/key_phrases/*"}] 
+                    },
+                    {
+                        "tableName": "Locations",
+                        "generatedKeyName": "location_id",
+                        "sourceContext": "/document/knowledge_projection/locations/*",
+                        "inputs":[
+                            {"name": "location", "source": "/document/knowledge_projection/locations/*"}] 
+                    }, 
+                    {
+                        "tableName": "ImageTags",
+                        "generatedKeyName": "tag_id",
+                        "sourceContext": "/document/knowledge_projection/image_tags/*",
+                        "inputs":[
+                            {"name": "tag", "source": "/document/knowledge_projection/image_tags/*"}] 
+                    },
+                    {
+                        "tableName": "docs",
+                        "generatedKeyName": "document_id", 
+                        "source": "/document/knowledge_projection" 
+                        }
+                ],
+                "files": []
+            }
+        ]     
+    } 
+} 
