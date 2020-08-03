@@ -69,9 +69,5 @@ namespace margies.search
 
         [IsSearchable, IsFilterable]
         public string content { get; set; }
-
-        // Uncomment below to add custom skill field
-        //[IsSearchable, IsFilterable]
-        //public string[] top_words { get; set; }
     }
 }

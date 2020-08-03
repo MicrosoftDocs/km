@@ -241,12 +241,6 @@ namespace margies.search
                 sourceFieldName: "/document/keyPhrases/*",
                 targetFieldName: "key_phrases"
             ));
-            
-            // uncomment below to add custom skill field
-            //outputMappings.Add(new FieldMapping(
-            //    sourceFieldName: "/document/topWords",
-            //    targetFieldName: "top_words"
-            //));
 
 
             // Create the indexer
