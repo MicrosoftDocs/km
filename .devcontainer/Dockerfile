@@ -72,10 +72,12 @@ RUN apt-get update \
     #
     # [Optional] Install the Azure CLI
     && if [ "$INSTALL_AZURE_CLI" = "true" ]; then \
-        echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list \
-        && curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2>/dev/null \
-        && apt-get update \
-        && apt-get install -y azure-cli; \
+        #echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list \
+        #&& curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - 2>/dev/null \
+        #&& apt-get update \
+        #&& apt-get install -y azure-cli; \
+        #Temp workaround for upload_batch issue in 2.10.0
+        && apt-get install -y azure-cli=2.9.1-1~buster; \
     fi \
     #
     # Clean up
