@@ -1,7 +1,7 @@
 
 # Knowledge Mining Exercises
 
-This repo contains the code files required to complete exercises in Microsoft Learn modules.
+This repo contains the code files required to complete exercises in the [Implement knowledge mining with Azure Cognitive Search](https://docs.microsoft.com/learn/paths/implement-knowledge-mining-azure-cognitive-search/) Microsoft Learn modules.
 
 ## Contributing
 
