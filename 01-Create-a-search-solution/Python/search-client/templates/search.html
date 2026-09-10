@@ -21,7 +21,7 @@
 </div>
 {% for search_result in search_results: %}
 <div class="result">
-    <p class="resultLink"><a href="{{ search_result['url'] }}" target="_blank">{{ search_result['file_name'] }}</a></p>
+    <p class="resultLink"><a href="{{ search_result['url'] }}" target="_blank" rel="noopener noreferrer">{{ search_result['file_name'] }}</a></p>
     <ul class="resultAttributes">
         <li>Author: {{ search_result['author'] }}</li>
         <li>Size: {{ search_result['size'] }} bytes</li>
@@ -29,7 +29,11 @@
     </ul>
     {% if search_result['@search.highlights'] is defined %}
         {% if search_result['@search.highlights']['content']|length > 0 %}
-            <div>{% for highlight in search_result['@search.highlights']['content']: %} <p class='resultExtract'>{{ highlight|safe }}</p> {% endfor %}</div>
+            <div>
+                {% for highlight in search_result['@search.highlights']['content']: %}
+                    <p class="resultExtract">{{ highlight }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
     {% endif %}
 </div>
